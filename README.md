@@ -1,4 +1,4 @@
-# Aztec Pour | Technical Documentation
+# Juggernog | Technical Documentation
 
 ## System Overview
 **Aztec Pour** is a smart drink dispenser control system designed for high-performance party environments (LMAO). It features a distributed architecture where a centralized Python/Flask server coordinates communication between a modern web interface and an ESP32-powered hardware dispenser.
