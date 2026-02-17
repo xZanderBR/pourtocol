@@ -3,450 +3,481 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aztec Dispenser | SDSU Party Mode</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Aztec Pour | Premium System</title>
     <!-- QR Library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         :root {
+            /* SDSU Branding Palette */
             --sdsu-scarlet: #A6192E;
-            --sdsu-scarlet-glow: rgba(166, 25, 46, 0.8);
-            --rave-red: #ff0000;
-            --neon-red: #ff3131;
-            --sdsu-black: #050505;
-            --sdsu-gold: #D4AF37;
-            --bg: #000000;
-            --card-bg: rgba(10, 10, 10, 0.7);
-            --text: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.6);
-            --success: #22c55e;
-            --success-glow: rgba(34, 197, 94, 0.5);
-            --error: #ff4444;
-            --error-glow: rgba(255, 68, 68, 0.5);
-            --border: rgba(255, 255, 255, 0.1);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --sdsu-black: #000000;
+            --sdsu-white: #ffffff;
+            --sdsu-gold: #f5d06c;
+
+            /* Apple System Colors (Dark Mode) - Adapted */
+            --sys-bg: var(--sdsu-black);
+            --sys-grouped-bg: var(--sdsu-black);
+            --sys-fill: #1c1c1e;
+            --sys-fill-secondary: #2c2c2e;
+            --sys-fill-tertiary: #3a3a3c;
+
+            --sys-text: var(--sdsu-white);
+            --sys-text-secondary: #a1a1a6;
+            --sys-text-tertiary: #48484a;
+
+            --sys-accent: var(--sdsu-scarlet);
+            --sys-blue: #0a84ff;
+            /* Keep for secondary if needed */
+            --sys-green: #30d158;
+            --sys-red: #ff453a;
+            --sys-orange: #ff9f0a;
+            --sys-gold: var(--sdsu-gold);
+
+            --glass: rgba(15, 15, 15, 0.7);
+            --glass-border: rgba(166, 25, 46, 0.15);
+            --blur: 25px;
+
+            --radius-l: 22px;
+            --radius-m: 14px;
+            --radius-s: 10px;
+
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.1);
         }
 
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: var(--font-stack);
+            background-color: var(--sys-bg);
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(166, 25, 46, 0.12) 0%, transparent 60%),
+                url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0l20 20v40l-20 20-20-20v-40z' fill='none' stroke='%23A6192E' stroke-opacity='0.03' stroke-width='1'/%3E%3Cpath d='M40 10l15 15v30l-15 15-15-15v-30z' fill='none' stroke='%23A6192E' stroke-opacity='0.02' stroke-width='0.5'/%3E%3C/svg%3E");
+            color: var(--sys-text);
             margin: 0;
             padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Dynamic Background Animation */
-        .bg-blob {
+        /* Ambient Background Glow */
+        .ambient-glow {
             position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
+            top: 50%;
+            left: 50%;
+            width: 120vw;
+            height: 120vw;
+            background: radial-gradient(circle, rgba(166, 25, 46, 0.08) 0%, rgba(0, 0, 0, 0) 60%);
+            transform: translate(-50%, -50%);
             z-index: -1;
-            opacity: 0.5;
-            animation: rave-float 6s infinite alternate ease-in-out;
-        }
-
-        .blob-1 {
-            top: -15%;
-            left: -15%;
-            width: 70vw;
-            height: 70vw;
-            background: radial-gradient(circle, var(--rave-red), var(--sdsu-scarlet));
-        }
-
-        .blob-2 {
-            bottom: -15%;
-            right: -15%;
-            width: 80vw;
-            height: 80vw;
-            background: radial-gradient(circle, #801122, #300000);
-            animation-delay: -3s;
-        }
-
-        @keyframes rave-float {
-            0% {
-                transform: translate(0, 0) scale(1) rotate(0deg);
-                opacity: 0.4;
-            }
-
-            33% {
-                transform: translate(50px, -20px) scale(1.1) rotate(10deg);
-                opacity: 0.6;
-            }
-
-            66% {
-                transform: translate(-30px, 40px) scale(0.9) rotate(-10deg);
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: translate(40px, 60px) scale(1.2) rotate(5deg);
-                opacity: 0.7;
-            }
+            pointer-events: none;
         }
 
         .container {
             width: 100%;
-            max-width: 600px;
-            display: grid;
-            gap: 20px;
-            z-index: 1;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding-bottom: 40px;
         }
 
-        /* Header */
-        .header-logo {
+        /* Typography & Header */
+        .header {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
+            animation: fadeIn 0.8s var(--ease-spring);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .aztec-emblem {
+            width: 80px;
+            height: 80px;
+            background: var(--sdsu-scarlet);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(166, 25, 46, 0.3);
             position: relative;
         }
 
-        .header-logo h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
+        .aztec-emblem::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: var(--sdsu-black);
+            clip-path: inherit;
+        }
+
+        .aztec-emblem svg {
+            width: 45px;
+            height: 45px;
+            position: relative;
+            z-index: 2;
+            fill: var(--sdsu-scarlet);
+            filter: drop-shadow(0 0 5px rgba(166, 25, 46, 0.5));
+        }
+
+        .brand-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
             margin: 0;
-            padding: 10px 20px;
-            line-height: 1.1;
-            letter-spacing: -3px;
+            color: var(--sdsu-scarlet);
             text-transform: uppercase;
-            background: linear-gradient(135deg, #ffffff 20%, #ff3131 50%, #ffffff 80%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 8px rgba(255, 49, 49, 0.4));
-            animation: rave-shine 8s linear infinite, glow-pulse 5s infinite ease-in-out;
-            background-size: 200% auto;
-            position: relative;
-            display: inline-block;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.4);
+            animation: fadeIn 0.8s var(--ease-spring), outlinePulse 3s infinite ease-in-out;
         }
 
-        @keyframes rave-shine {
-            to {
-                background-position: 200% center;
-            }
-        }
-
-        @keyframes glow-pulse {
+        @keyframes outlinePulse {
 
             0%,
             100% {
-                filter: drop-shadow(0 0 8px rgba(255, 49, 49, 0.4));
-                transform: scale(1);
+                -webkit-text-stroke-color: rgba(255, 255, 255, 0.4);
+                filter: drop-shadow(0 0 0px white);
             }
 
             50% {
-                filter: drop-shadow(0 0 15px rgba(255, 49, 49, 0.6));
-                transform: scale(1.01);
+                -webkit-text-stroke-color: rgba(255, 255, 255, 0.9);
+                filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.4));
             }
         }
 
-        @media (max-width: 480px) {
-            .header-logo h1 {
-                font-size: 2.5rem;
-            }
-
-            .container {
-                gap: 16px;
-            }
+        .brand-subtitle {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--sdsu-gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: -4px;
+            opacity: 0.8;
         }
 
-        /* Card Styles */
-        .card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        .scribble {
             position: relative;
-            overflow: hidden;
-            transition: var(--transition);
+            display: inline-block;
+            margin: 0 4px;
+            color: var(--sys-text-secondary);
         }
 
-        .card::before {
+        .scribble::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
-            opacity: 0.8;
-            animation: scanline 3s linear infinite;
+            left: -10%;
+            top: 45%;
+            width: 120%;
+            height: 4px;
+            background: var(--sdsu-scarlet);
+            transform: rotate(-3deg);
+            border-radius: 50% 20% 50% 20%;
+            opacity: 0.9;
+            filter: blur(0.5px);
+            box-shadow: 0 0 5px rgba(166, 25, 46, 0.4);
         }
 
-        @keyframes scanline {
+        .scribble::before {
+            content: '';
+            position: absolute;
+            left: -5%;
+            top: 55%;
+            width: 110%;
+            height: 2px;
+            background: var(--sdsu-scarlet);
+            transform: rotate(2deg);
+            border-radius: 20% 50% 20% 50%;
+            opacity: 0.7;
+        }
+
+        /* Glass Card Style */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur)) saturate(180%);
+            -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
+            border-radius: var(--radius-l);
+            border: 1px solid var(--glass-border);
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.6s var(--ease-spring) backwards, borderPulse 4s infinite;
+            position: relative;
+        }
+
+        @keyframes borderPulse {
             0% {
-                transform: translateX(-100%);
+                border-color: rgba(166, 25, 46, 0.2);
+            }
+
+            50% {
+                border-color: rgba(166, 25, 46, 0.4);
             }
 
             100% {
-                transform: translateX(100%);
+                border-color: rgba(166, 25, 46, 0.2);
             }
         }
 
-        .card:hover {
-            border-color: rgba(255, 49, 49, 0.4);
-            box-shadow: 0 12px 40px rgba(255, 49, 49, 0.2);
-            transform: translateY(-2px);
+        .card:nth-child(1) {
+            animation-delay: 0.1s;
         }
 
-        h2 {
-            margin-top: 0;
-            font-size: 1.1rem;
-            font-weight: 700;
+        .card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .card-header {
+            font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 2px;
+            color: var(--sys-text-secondary);
+            letter-spacing: 1px;
             margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* iOS Style List Group (Status) */
+        .list-group {
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-m);
+            overflow: hidden;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: transparent;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-label {
+            font-size: 0.9rem;
+            color: var(--sys-text);
+        }
+
+        .list-value {
+            font-size: 0.9rem;
+            color: var(--sys-text-secondary);
+            font-variant-numeric: tabular-nums;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        h2::before {
-            content: '';
+        /* Status Indicators (Refined Dots) */
+        .status-indicator {
             width: 8px;
             height: 8px;
-            background: var(--sdsu-scarlet);
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--sdsu-scarlet);
+            background: var(--sys-text-tertiary);
+            transition: all 0.4s ease;
         }
 
-        /* Status Grid */
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .status-indicator.active {
+            background: var(--sys-green);
+            box-shadow: 0 0 10px rgba(48, 209, 88, 0.4);
         }
 
-        .status-item {
-            padding: 12px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
+        .status-indicator.busy {
+            background: var(--sys-gold);
+            box-shadow: 0 0 10px rgba(245, 208, 108, 0.4);
         }
 
-        .status-indicator {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            position: absolute;
-            top: 12px;
-            right: 12px;
-        }
-
-        .status-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            opacity: 0.4;
-            margin-bottom: 4px;
-            letter-spacing: 1px;
-            padding-right: 10px;
-        }
-
-        .status-value {
-            font-weight: 700;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-        }
-
-        .online {
-            color: var(--success);
-            text-shadow: 0 0 10px var(--success-glow);
-        }
-
-        .online-indicator {
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-            animation: pulse-green 2s infinite;
-        }
-
-        .offline {
-            color: var(--error);
-            text-shadow: 0 0 10px var(--error-glow);
-        }
-
-        .offline-indicator {
-            background: var(--error);
-            box-shadow: 0 0 8px var(--error);
-        }
-
-        @keyframes pulse-green {
-            0% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-            }
-
-            70% {
-                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
-            }
+        .status-indicator.error {
+            background: var(--sys-red);
         }
 
         /* Controls */
-        .input-section {
+        .input-group {
+            position: relative;
             margin-bottom: 24px;
         }
 
-        .label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        input {
+        .ios-input {
             width: 100%;
-            padding: 16px 16px 16px 16px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            background: rgba(0, 0, 0, 0.4);
-            color: white;
-            font-family: 'Outfit', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--sdsu-scarlet);
-            background: rgba(166, 25, 46, 0.05);
-            box-shadow: 0 0 0 4px rgba(166, 25, 46, 0.15);
-        }
-
-        .scan-btn {
-            position: absolute;
-            right: 6px;
-            top: 6px;
-            bottom: 6px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--sys-fill-secondary);
             border: none;
+            border-radius: 12px;
+            padding: 16px 48px 16px 16px;
+            color: var(--sys-text);
+            font-size: 1rem;
+            font-family: var(--font-stack);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .ios-input::placeholder {
+            color: var(--sys-text-tertiary);
+        }
+
+        .ios-input:focus {
+            background: var(--sys-fill-tertiary);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
-            width: 44px;
+            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--sys-accent);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: var(--transition);
+            transition: background 0.2s;
         }
 
-        .scan-btn:hover {
-            background: var(--sdsu-scarlet);
-            transform: scale(1.05);
+        .icon-btn:active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-50%) scale(0.95);
         }
 
-        /* Amount Selector */
-        .amount-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .amount-btn {
-            padding: 14px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-            background: rgba(255, 255, 255, 0.03);
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
+        /* iOS Segmented Control Style (Volume) */
+        .segmented-control {
+            display: flex;
+            background: var(--sys-fill-tertiary);
+            padding: 3px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             position: relative;
-            overflow: hidden;
         }
 
-        .amount-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .amount-btn.active {
-            background: var(--sdsu-scarlet);
-            border-color: var(--sdsu-scarlet);
-            color: white;
-            box-shadow: 0 4px 15px var(--sdsu-scarlet-glow);
-            transform: translateY(-2px);
-        }
-
-        /* Custom Amount Input with Liquid Effect */
-        .custom-amount-wrapper {
-            position: relative;
-            margin-top: 12px;
-        }
-
-        .unit-tag {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-weight: 900;
-            color: var(--sdsu-gold);
-            font-size: 0.8rem;
-            pointer-events: none;
-            opacity: 0.8;
-        }
-
-        /* Main Dispense Button */
-        .dispense-btn {
-            background: linear-gradient(135deg, var(--sdsu-scarlet), #801122);
-            color: white;
-            font-size: 1.25rem;
-            font-weight: 900;
-            padding: 20px;
-            border-radius: 16px;
+        .segment-btn {
+            flex: 1;
             border: none;
+            background: transparent;
+            color: var(--sys-text);
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 0;
+            border-radius: 7px;
             cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 4px 15px rgba(166, 25, 46, 0.4);
-            transition: var(--transition);
-            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .segment-btn span {
+            font-size: 0.65rem;
+            font-weight: 400;
+            color: var(--sys-text-secondary);
+            margin-top: 2px;
+        }
+
+        .segment-btn.active {
+            color: #000;
+        }
+
+        .segment-btn.active span {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* The sliding background for the segmented control */
+        .segment-highlight {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            height: calc(100% - 6px);
+            width: calc(33.33% - 2px);
+            background: #ffffff;
+            /* White like iOS */
+            border-radius: 7px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s var(--ease-spring);
+            z-index: 1;
+        }
+
+        /* Custom Slider/Input Wrapper */
+        .custom-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--sys-fill-secondary);
+            border-radius: 12px;
+            padding: 4px;
+        }
+
+        .custom-input-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 12px;
+            color: var(--sys-text);
+            font-size: 0.95rem;
             width: 100%;
+            font-family: var(--font-stack);
+        }
+
+        .unit-label {
+            padding-right: 12px;
+            color: var(--sys-text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Main CTA Button */
+        .dispense-btn {
+            width: 100%;
+            background: var(--sys-accent);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            position: relative;
             overflow: hidden;
-            animation: button-glow 6s infinite ease-in-out;
+            transition: all 0.3s var(--ease-spring);
+            box-shadow: 0 4px 20px rgba(166, 25, 46, 0.3);
         }
 
-        @keyframes button-glow {
-
-            0%,
-            100% {
-                box-shadow: 0 4px 15px rgba(166, 25, 46, 0.4);
-                transform: translateY(0) scale(1);
-            }
-
-            50% {
-                box-shadow: 0 8px 25px rgba(255, 49, 49, 0.3);
-                transform: translateY(-1px) scale(1.005);
-            }
+        .dispense-btn:active:not(:disabled) {
+            transform: scale(0.97);
+            box-shadow: 0 2px 10px rgba(166, 25, 46, 0.2);
         }
 
-        .dispense-btn::after {
+        .dispense-btn::before {
             content: '';
             position: absolute;
             top: 0;
@@ -454,742 +485,503 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: 0.5s;
+            transition: left 0.5s;
         }
 
-        .dispense-btn:hover:not(:disabled) {
-            transform: translateY(-1px) scale(1.01);
-            box-shadow: 0 8px 25px rgba(166, 25, 46, 0.5);
-        }
-
-        .dispense-btn:hover:not(:disabled)::after {
+        .dispense-btn:hover:not(:disabled)::before {
             left: 100%;
-            transition: 0.7s;
-        }
-
-        .dispense-btn:active:not(:disabled) {
-            transform: translateY(1px) scale(0.99);
         }
 
         .dispense-btn:disabled {
-            background: #1a1a1a;
-            color: #444;
+            background: var(--sys-fill-tertiary);
+            color: var(--sys-text-tertiary);
             box-shadow: none;
             cursor: not-allowed;
-            transform: none;
-            border: 1px solid #333;
+        }
+
+        /* Error state for button */
+        .dispense-btn.error-mode {
+            background: rgba(255, 69, 58, 0.15);
+            color: var(--sys-red);
+            box-shadow: none;
+            border: 1px solid rgba(255, 69, 58, 0.2);
+        }
+
+        /* Logs - Apple Inbox Style */
+        .logs-container {
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .logs-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .logs-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .log-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .log-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-user {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .log-meta {
+            font-size: 0.75rem;
+            color: var(--sys-text-secondary);
+        }
+
+        .log-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: rgba(48, 209, 88, 0.15);
+            color: var(--sys-green);
+        }
+
+        .badge-fail {
+            background: rgba(255, 69, 58, 0.15);
+            color: var(--sys-red);
+        }
+
+        .badge-pending {
+            background: rgba(255, 159, 10, 0.15);
+            color: var(--sys-orange);
         }
 
         /* QR Scanner Area */
         #qr-reader-container {
             display: none;
             margin-top: 16px;
-            border-radius: 16px;
+            border-radius: var(--radius-m);
             overflow: hidden;
-            border: 2px solid var(--sdsu-scarlet);
-            position: relative;
             background: #000;
+            border: 1px solid var(--glass-border);
+            position: relative;
         }
 
-        #qr-reader-container::before {
-            content: 'SCANNING...';
+        #qr-reader {
+            width: 100%;
+        }
+
+        #qr-reader video {
+            border-radius: var(--radius-m);
+            object-fit: cover;
+        }
+
+        .close-scan-btn {
             position: absolute;
-            top: 10px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--sdsu-scarlet);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 4px 12px;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 900;
+            font-size: 0.8rem;
             z-index: 10;
-            letter-spacing: 1px;
-            box-shadow: 0 0 10px var(--sdsu-scarlet-glow);
         }
 
-        /* Logs */
-        .log-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        /* Scrollbar Styling */
-        .log-list::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .log-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .log-list::-webkit-scrollbar-thumb {
-            background: var(--sdsu-scarlet);
-            border-radius: 4px;
-        }
-
-        .log-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            font-size: 0.85rem;
-            border-left: 2px solid transparent;
-            animation: slideIn 0.4s ease forwards;
-        }
-
-        @keyframes slideIn {
+        /* Animations */
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateX(-10px);
             }
 
             to {
                 opacity: 1;
-                transform: translateX(0);
             }
         }
 
-        .status-pill {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-
-        .pill-started {
-            background: rgba(166, 25, 46, 0.2);
-            color: var(--sdsu-scarlet);
-            border: 1px solid rgba(166, 25, 46, 0.3);
-        }
-
-        .pill-success {
-            background: rgba(34, 197, 94, 0.2);
-            color: var(--success);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .pill-failed {
-            background: rgba(255, 68, 68, 0.2);
-            color: var(--error);
-            border: 1px solid rgba(255, 68, 68, 0.3);
-        }
-
-        /* Error Message */
-        #error-msg {
-            color: #ffcccc;
-            background: rgba(255, 68, 68, 0.1);
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-weight: 700;
-            display: none;
-            border: 1px solid rgba(255, 68, 68, 0.3);
-            text-align: center;
-            backdrop-filter: blur(5px);
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
 
-            25% {
-                transform: translateX(-5px);
-            }
-
-            75% {
-                transform: translateX(5px);
-            }
-        }
-
-        /* Utility */
-        .hidden {
-            display: none !important;
-        }
-
-        .text-gold {
-            color: var(--sdsu-gold);
-        }
-
-        /* Rave Mode Specifics */
-        .rave-mode {
-            background-color: #050000;
-        }
-
-        .rave-mode .bg-blob {
-            filter: blur(60px);
-            opacity: 0.8;
-            animation-duration: 2s;
-        }
-
-        .rave-mode .card {
-            border-color: var(--neon-red);
-            box-shadow: 0 0 20px rgba(255, 49, 49, 0.4);
-            animation: strobe 0.2s infinite alternate;
-        }
-
-        @keyframes strobe {
-            0% {
-                border-color: var(--neon-red);
-            }
-
-            100% {
-                border-color: var(--sdsu-gold);
-            }
-        }
-
-        .rave-mode .header-logo h1 {
-            animation: rave-shine 3s linear infinite, glow-pulse 2s infinite ease-in-out;
-        }
-
-        .rave-mode .shot-glass-3d {
-            animation: glass-dance 1s infinite ease-in-out;
-        }
-
-        .rave-mode .glass-liquid {
-            animation: liquid-swish 0.5s infinite alternate ease-in-out;
-            box-shadow: 0 0 30px var(--neon-red);
-        }
-
-        /* Scanline Overlay */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 3px 100%;
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        .rave-mode::after {
-            opacity: 0.6;
-            animation: noise 0.2s infinite steps(2);
-        }
-
-        @keyframes noise {
-            0% {
+            to {
+                opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        /* Rave/Busy Mode Subtle Pulse */
+        body.busy-mode .ambient-glow {
+            background: radial-gradient(circle, rgba(166, 25, 46, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+            animation: pulseGlow 1.5s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.5;
+            }
 
             100% {
-                transform: translateY(2px);
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
             }
         }
 
-        /* Number input spinners */
+        /* Input spinner hidden */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
-        }
-
-        /* 3D Shot Glass */
-        .header-main {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 25px;
-            margin-bottom: 5px;
-            perspective: 1200px;
-            z-index: 10;
-            position: relative;
-        }
-
-        .shot-glass-3d-wrap {
-            width: 70px;
-            height: 100px;
-            position: relative;
-            cursor: pointer;
-            filter: drop-shadow(0 0 15px var(--sdsu-scarlet-glow));
-            transition: var(--transition);
-        }
-
-        .shot-glass-3d-wrap:hover {
-            transform: scale(1.15) rotate(-5deg);
-            filter: drop-shadow(0 0 25px var(--neon-red));
-        }
-
-        .shot-glass-3d-wrap::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 10px;
-            background: radial-gradient(ellipse at center, rgba(166, 25, 46, 0.4) 0%, transparent 70%);
-            z-index: -1;
-        }
-
-        .shot-glass-3d {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            animation: glass-dance 5s infinite ease-in-out;
-            transform: rotateX(-15deg) rotateY(20deg);
-        }
-
-        @keyframes glass-dance {
-
-            0%,
-            100% {
-                transform: rotateX(-15deg) rotateY(15deg) translateY(0);
-            }
-
-            50% {
-                transform: rotateX(-10deg) rotateY(-15deg) translateY(-12px);
-            }
-        }
-
-        .glass-body {
-            position: absolute;
-            top: 15%;
-            left: 15%;
-            width: 70%;
-            height: 70%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
-            border: 1.5px solid rgba(255, 255, 255, 0.4);
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            backdrop-filter: blur(8px);
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.2),
-                0 0 20px rgba(166, 25, 46, 0.1);
-            overflow: hidden;
-        }
-
-        .glass-body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 15%;
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), transparent);
-            filter: blur(1px);
-        }
-
-        .glass-rim {
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            width: 80%;
-            height: 14px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            transform: rotateX(25deg);
-            z-index: 5;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .glass-liquid {
-            position: absolute;
-            bottom: 3px;
-            left: 3px;
-            right: 3px;
-            height: 60%;
-            background: linear-gradient(to top, var(--sdsu-scarlet), var(--rave-red));
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-            opacity: 0.9;
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
-            animation: liquid-swish 4s infinite alternate ease-in-out;
-            transform-origin: bottom center;
-        }
-
-        .glass-liquid::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            filter: blur(1px);
-        }
-
-        @keyframes liquid-swish {
-            0% {
-                transform: rotate(-2deg) scaleY(1);
-            }
-
-            100% {
-                transform: rotate(2deg) scaleY(1.05);
-            }
-        }
-
-        .glass-base {
-            position: absolute;
-            bottom: 10%;
-            left: 15%;
-            width: 70%;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            transform: rotateX(85deg);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .sparkle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 0 10px white, 0 0 20px white;
-            animation: sparkle-float 3s infinite linear;
-            opacity: 0;
-            z-index: 15;
-        }
-
-        @keyframes sparkle-float {
-            0% {
-                transform: translate(0, 0) scale(0);
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(20px, -40px) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-main {
-                gap: 15px;
-            }
-
-            .shot-glass-3d-wrap {
-                width: 50px;
-                height: 80px;
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Background Elements -->
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
-
-    <div class="header-main">
-        <div class="shot-glass-3d-wrap">
-            <div class="sparkle" style="top: 20%; left: 20%; animation-delay: 0s;"></div>
-            <div class="sparkle" style="top: 40%; left: 70%; animation-delay: 1s;"></div>
-            <div class="sparkle" style="top: 60%; left: 30%; animation-delay: 2s;"></div>
-            <div class="shot-glass-3d">
-                <div class="glass-rim"></div>
-                <div class="glass-body">
-                    <div class="glass-liquid"></div>
-                </div>
-                <div class="glass-base"></div>
-            </div>
-        </div>
-        <div class="header-logo">
-            <h1>Aztec Pour</h1>
-        </div>
-    </div>
+    <div class="ambient-glow"></div>
 
     <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="aztec-emblem">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2ZM12 15.4L8.5 17.5L12 5L15.5 17.5L12 15.4Z" />
+                </svg>
+            </div>
+            <h1 class="brand-title">Aztec Pour</h1>
+            <div class="brand-subtitle">SDSU <span class="scribble">Shot</span> Water Dispenser</div>
+        </header>
+
         <!-- Status Card -->
         <div class="card">
-            <h2>System Intel</h2>
-            <div class="status-grid">
-                <div class="status-item">
-                    <div class="status-indicator" id="esp-indicator"></div>
-                    <div class="status-label">ESP32 Link</div>
-                    <div id="esp-connection" class="status-value offline">OFFLINE</div>
+            <div class="card-header">
+                System Status
+                <div id="heartbeat" style="color: var(--sys-text-tertiary); font-weight: 400; font-size: 0.7rem;">
+                    --:--:--</div>
+            </div>
+            <div class="list-group">
+                <div class="list-item">
+                    <span class="list-label">Connectivity</span>
+                    <div class="list-value">
+                        <div class="status-indicator" id="esp-indicator"></div>
+                        <span id="esp-connection">Offline</span>
+                    </div>
                 </div>
-                <div class="status-item">
-                    <div class="status-indicator" id="glass-indicator"></div>
-                    <div class="status-label">Glass Detected</div>
-                    <div id="glass-status" class="status-value">NO</div>
+                <div class="list-item">
+                    <span class="list-label">Glass Sensor</span>
+                    <div class="list-value">
+                        <div class="status-indicator" id="glass-indicator"></div>
+                        <span id="glass-status">Empty</span>
+                    </div>
                 </div>
-                <div class="status-item">
-                    <div class="status-label">Machine State</div>
-                    <div id="sys-state" class="status-value">IDLE</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">Last Ping</div>
-                    <div id="heartbeat" class="status-value text-gold">--:--:--</div>
+                <div class="list-item">
+                    <span class="list-label">Machine State</span>
+                    <div class="list-value" id="sys-state">Idle</div>
                 </div>
             </div>
         </div>
 
         <!-- Controls Card -->
         <div class="card">
-            <div id="error-msg"></div>
-            <div class="controls">
-                <div class="input-section">
-                    <label class="label">Who's Pouring?</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="user-token" placeholder="SCAN ID OR TYPE NAME..." autocomplete="off">
-                        <button class="scan-btn" onclick="toggleScanner()" id="scanner-btn"
-                            title="Toggle Camera Scanner">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-                                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-                                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-                                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-                                <rect x="7" y="7" width="10" height="10" rx="1"></rect>
-                            </svg>
-                        </button>
-                    </div>
-                    <div id="qr-reader-container">
-                        <div id="qr-reader"></div>
-                        <button class="amount-btn"
-                            style="width: 100%; margin-top: 10px; font-size: 0.75rem; padding: 10px; border-color: var(--error); color: var(--error);"
-                            onclick="stopScanner()">CLOSE SCANNER</button>
-                    </div>
-                </div>
+            <div class="card-header">Dispense Control</div>
 
-                <div class="input-section">
-                    <label class="label">Select Volume</label>
-                    <div class="amount-selector">
-                        <button class="amount-btn" onclick="setAmount(15, this)">SHOT <br><span
-                                style="font-size:0.7em; opacity:0.6">15ML</span></button>
-                        <button class="amount-btn active" onclick="setAmount(30, this)">DOUBLE <br><span
-                                style="font-size:0.7em; opacity:0.6">30ML</span></button>
-                        <button class="amount-btn" onclick="setAmount(45, this)">TRIPLE <br><span
-                                style="font-size:0.7em; opacity:0.6">45ML</span></button>
-                    </div>
-                    <div style="margin-top: 12px;">
-                        <div class="custom-amount-wrapper">
-                            <input type="number" id="custom-amount" placeholder="CUSTOM AMOUNT..." inputmode="numeric"
-                                pattern="[0-9]*" min="1" max="60" oninput="handleCustomInput(this)">
-                            <span class="unit-tag">ML</span>
-                        </div>
-                    </div>
+            <div class="input-group">
+                <input type="text" id="user-token" class="ios-input" placeholder="Scan ID or Enter Name"
+                    autocomplete="off">
+                <button class="icon-btn" onclick="toggleScanner()" id="scanner-btn" title="Toggle Camera">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                        <rect x="7" y="7" width="10" height="10" rx="1"></rect>
+                    </svg>
+                </button>
+                <div id="qr-reader-container">
+                    <div id="qr-reader"></div>
+                    <button class="close-scan-btn" onclick="stopScanner()">Cancel</button>
                 </div>
-
-                <button id="dispense-btn" class="dispense-btn" onclick="handleDispense()" disabled>INITIALIZE
-                    POUR</button>
             </div>
+
+            <label class="list-label" style="margin-bottom: 8px; display:block;">Volume Selection</label>
+
+            <!-- iOS Segmented Control -->
+            <div class="segmented-control">
+                <div class="segment-highlight" id="segment-highlight"></div>
+                <button class="segment-btn active" onclick="setAmount(15, 0)">Shot<span>15ml</span></button>
+                <button class="segment-btn" onclick="setAmount(30, 1)">Double<span>30ml</span></button>
+                <button class="segment-btn" onclick="setAmount(45, 2)">Triple<span>45ml</span></button>
+            </div>
+
+            <!-- Custom Input -->
+            <div class="custom-input-wrapper">
+                <input type="number" id="custom-amount" placeholder="Custom Volume" inputmode="numeric"
+                    oninput="handleCustomInput(this)">
+                <span class="unit-label">ML</span>
+            </div>
+
+            <button id="dispense-btn" class="dispense-btn" onclick="handleDispense()" disabled>
+                INITIALIZE POUR
+            </button>
         </div>
 
         <!-- Logs Card -->
         <div class="card">
-            <h2>Party Logs</h2>
-            <div class="log-list" id="log-list">
-                <!-- Logs will be populated here -->
-                <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">Waiting for
-                    activity...</div>
+            <div class="card-header">Activity Log</div>
+            <div class="logs-container" id="log-list">
+                <div style="text-align: center; color: var(--sys-text-tertiary); font-size: 0.8rem; padding: 20px;">
+                    No recent activity
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // State Variables
-        let selectedAmount = 30;
-        let isSystemReady = false;
-        let glassPresent = false;
-        let currentStatus = 'idle';
-        let espOnline = false;
+        // --- State Management ---
+        let state = {
+            selectedAmount: 15,
+            selectedIndex: 0,
+            espOnline: false,
+            glassPresent: false,
+            sysState: 'idle', // idle, pouring, error
+            token: ''
+        };
+
         let html5QrCode = null;
+        let isScannerOpen = false;
 
         // --- Interaction Logic ---
 
-        function setAmount(ml, btn) {
-            selectedAmount = ml;
-            // Remove active class from all buttons
-            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-            // Add to clicked (if it exists)
-            if (btn) btn.classList.add('active');
+        function setAmount(ml, index) {
+            state.selectedAmount = ml;
+            state.selectedIndex = index;
+
+            // Update UI for Segmented Control
+            const highlight = document.getElementById('segment-highlight');
+            const btns = document.querySelectorAll('.segment-btn');
+
+            // Move highlight pill
+            highlight.style.transform = `translateX(${index * 100}%)`;
+
+            // Update active class
+            btns.forEach((btn, i) => {
+                if (i === index) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
 
             // Clear custom input
-            const customInput = document.getElementById('custom-amount');
-            if (customInput.value) customInput.value = '';
-
+            document.getElementById('custom-amount').value = '';
             updateDispenseButton();
         }
 
         function handleCustomInput(el) {
             const val = parseInt(el.value);
-            if (!isNaN(val)) {
-                selectedAmount = val;
+            if (!isNaN(val) && val > 0) {
+                state.selectedAmount = val;
+                // Reset segmented highlight visually to indicate custom
+                document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('segment-highlight').style.opacity = '0.5';
             } else {
-                selectedAmount = 0;
+                // Revert to last selected preset if empty
+                setAmount(state.selectedIndex === 0 ? 15 : state.selectedIndex === 1 ? 30 : 45, state.selectedIndex);
+                document.getElementById('segment-highlight').style.opacity = '1';
             }
-            // Deselect preset buttons
-            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
             updateDispenseButton();
         }
 
         function updateDispenseButton() {
             const btn = document.getElementById('dispense-btn');
-            const amountValid = !isNaN(selectedAmount) && selectedAmount > 0 && selectedAmount <= 60;
-            const canDispense = isSystemReady && glassPresent && amountValid;
-            btn.disabled = !canDispense;
+            const isReady = state.espOnline && state.glassPresent && state.sysState === 'idle' && state.selectedAmount > 0;
 
-            // Button Text Logic
-            if (!espOnline) btn.innerText = "SYSTEM OFFLINE";
-            else if (!glassPresent) btn.innerText = "PLACE GLASS";
-            else if (currentStatus !== 'idle') btn.innerText = "DISPENSING...";
-            else if (!amountValid) btn.innerText = "INVALID AMOUNT";
-            else btn.innerText = "POUR IT UP";
+            btn.disabled = !isReady;
+            btn.className = 'dispense-btn'; // Reset classes
+
+            if (state.sysState === 'pouring') {
+                btn.innerText = "DISPENSING...";
+                btn.disabled = true;
+            } else if (!state.espOnline) {
+                btn.innerText = "SYSTEM OFFLINE";
+                btn.classList.add('error-mode');
+            } else if (!state.glassPresent) {
+                btn.innerText = "PLACE GLASS";
+            } else if (state.selectedAmount > 60) {
+                btn.innerText = "EXCESS VOLUME";
+                btn.classList.add('error-mode');
+                btn.disabled = true;
+            } else {
+                btn.innerText = "DISPENSE BEVERAGE";
+            }
         }
 
         async function handleDispense() {
             const tokenInput = document.getElementById('user-token');
-            const token = tokenInput.value.trim() || 'GUEST';
-            const errorEl = document.getElementById('error-msg');
+            const token = tokenInput.value.trim() || 'Guest';
             const btn = document.getElementById('dispense-btn');
 
-            errorEl.style.display = 'none';
+            if (btn.disabled) return;
 
-            // Visual feedback of sending
-            const originalText = btn.innerText;
-            btn.innerText = "SENDING...";
-            btn.style.opacity = "0.8";
+            // UI Feedback
+            btn.innerText = "REQUESTING...";
+            btn.disabled = true;
 
             try {
                 const response = await fetch('/api/dispense', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        amount_ml: parseInt(selectedAmount),
+                        amount_ml: state.selectedAmount,
                         user_token: token
                     })
                 });
+
                 const result = await response.json();
 
-                btn.innerText = originalText;
-                btn.style.opacity = "1";
+                if (response.ok && result.success) {
+                    state.sysState = 'pouring';
+                    document.body.classList.add('busy-mode');
+                    updateDispenseButton();
 
-                if (!result.success) {
-                    errorEl.innerText = "BUZZER: " + result.reason.toUpperCase();
-                    errorEl.style.display = 'block';
+                    // The backend handles logging the "started" event
+                    // We poll for status to know when it's done index.html
+                    // But for immediate feedback:
+                    setTimeout(() => {
+                        state.sysState = 'idle';
+                        document.body.classList.remove('busy-mode');
+                        tokenInput.value = '';
+                        // Refresh both status and logs
+                        refreshStatus();
+                        fetchLogs();
+                    }, 4000); // Wait slightly longer than a pour
                 } else {
-                    tokenInput.value = '';
-                    // Clear custom amount on success
-                    document.getElementById('custom-amount').value = '';
-                    // Reset selection to default (Double)
-                    const doubleBtn = document.querySelector('.amount-btn:nth-child(2)');
-                    setAmount(30, doubleBtn);
-                    refreshLogs();
+                    throw new Error(result.reason || "Dispense failed");
                 }
+
             } catch (err) {
                 console.error(err);
-                btn.innerText = originalText;
-                btn.style.opacity = "1";
-                errorEl.innerText = "COMM ERROR: CHECK WIFI CONNECTION";
-                errorEl.style.display = 'block';
+                btn.innerText = "ERROR: " + (err.message.includes("Connection") ? "TIMEOUT" : "DENIED");
+                btn.classList.add('error-mode');
+                setTimeout(updateDispenseButton, 3000);
             }
         }
 
-        // --- System Status & Logs ---
+        // --- UI Updates ---
+
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/api/logs?limit=15');
+                const logs = await response.json();
+
+                const list = document.getElementById('log-list');
+                if (logs.length === 0) {
+                    list.innerHTML = `<div style="text-align: center; color: var(--sys-text-tertiary); font-size: 0.8rem; padding: 20px;">No recent activity</div>`;
+                    return;
+                }
+
+                list.innerHTML = logs.map(log => {
+                    const status = log.status; // started, failed, completed
+                    const badgeClass = status === 'started' || status === 'completed' ? 'badge-success' : status === 'failed' ? 'badge-fail' : 'badge-pending';
+                    const time = new Date(log.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    return `
+                        <div class="log-row">
+                            <div class="log-info">
+                                <span class="log-user">${log.user_token}</span>
+                                <span class="log-meta">${time} • ${log.amount_ml}ml</span>
+                            </div>
+                            <span class="log-badge ${badgeClass}">${status}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Failed to fetch logs:", err);
+            }
+        }
+
+        // Keep local addLog for immediate feedback if needed, but fetchLogs is primary
+        function addLog(user, amount, status) {
+            fetchLogs(); // Just trigger a refresh from server
+        }
 
         async function refreshStatus() {
             try {
                 const response = await fetch('/api/status');
                 const data = await response.json();
 
-                espOnline = data.esp_online;
+                state.espOnline = data.esp_online;
+                state.glassPresent = data.esp_status.glass_present || false;
 
-                // Update ESP Connection UI
+                // Only update sysState if we aren't currently waiting for a pour to finish
+                if (state.sysState !== 'pouring') {
+                    state.sysState = data.esp_status.state || 'idle';
+                }
+
+                // DOM Updates
                 const espConn = document.getElementById('esp-connection');
                 const espInd = document.getElementById('esp-indicator');
 
-                espConn.innerText = espOnline ? 'CONNECTED' : 'OFFLINE';
-                espConn.className = 'status-value ' + (espOnline ? 'online' : 'offline');
-                espInd.className = 'status-indicator ' + (espOnline ? 'online-indicator' : 'offline-indicator');
+                espConn.innerText = state.espOnline ? 'Online' : 'Offline';
+                espConn.style.color = state.espOnline ? 'var(--sys-text)' : 'var(--sys-text-tertiary)';
+                espInd.className = `status-indicator ${state.espOnline ? 'active' : 'error'}`;
 
-                // Update Glass Status
-                glassPresent = data.esp_status.glass_present;
                 const glassEl = document.getElementById('glass-status');
                 const glassInd = document.getElementById('glass-indicator');
 
-                glassEl.innerText = glassPresent ? 'DETECTED' : 'EMPTY';
-                glassEl.className = 'status-value ' + (glassPresent ? 'online' : 'offline');
-                glassInd.className = 'status-indicator ' + (glassPresent ? 'online-indicator' : 'offline-indicator');
+                glassEl.innerText = state.glassPresent ? 'Detected' : 'Empty';
+                glassEl.style.color = state.glassPresent ? 'var(--sys-text)' : 'var(--sys-text-tertiary)';
+                glassInd.className = `status-indicator ${state.glassPresent ? 'active' : ''}`;
 
-                // Update State
-                currentStatus = data.esp_status.state;
                 const stateEl = document.getElementById('sys-state');
-                stateEl.innerText = currentStatus.toUpperCase();
+                stateEl.innerText = state.sysState.toUpperCase();
 
-                // Add specific styling for busy state
-                if (currentStatus !== 'idle') {
-                    stateEl.style.color = 'var(--sdsu-gold)';
-                    document.body.classList.add('rave-mode');
+                if (state.sysState === 'pouring' || data.is_pouring) {
+                    stateEl.style.color = 'var(--sys-gold)';
+                    document.body.classList.add('busy-mode');
                 } else {
-                    stateEl.style.color = 'var(--text)';
-                    document.body.classList.remove('rave-mode');
+                    stateEl.style.color = 'var(--sys-text-secondary)';
+                    document.body.classList.remove('busy-mode');
                 }
 
-                // Heartbeat
-                if (data.timestamp) {
-                    document.getElementById('heartbeat').innerText = new Date(data.timestamp * 1000).toLocaleTimeString();
-                }
-
-                isSystemReady = espOnline && currentStatus === 'idle';
+                document.getElementById('heartbeat').innerText = new Date().toLocaleTimeString();
                 updateDispenseButton();
 
             } catch (err) {
-                console.error("Status check failed", err);
-                // Optionally set UI to offline state if fetch fails repeatedly
-            }
-        }
-
-        async function refreshLogs() {
-            try {
-                const response = await fetch('/api/logs?limit=8');
-                const logs = await response.json();
-                const list = document.getElementById('log-list');
-
-                if (logs.length === 0) {
-                    list.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 20px;">Waiting for activity...</div>';
-                    return;
-                }
-
-                list.innerHTML = logs.map((log, index) => `
-                    <div class="log-entry" style="animation-delay: ${index * 50}ms">
-                        <div>
-                            <div style="font-weight: 700; font-size: 0.95rem;">${log.user_token}</div>
-                            <div style="opacity: 0.5; font-size: 0.75rem; margin-top:2px;">
-                                ${new Date(log.timestamp).toLocaleTimeString()} • 
-                                <span style="color: var(--sdsu-scarlet); font-weight: 700;">${log.amount_ml}ML</span>
-                            </div>
-                        </div>
-                        <span class="status-pill pill-${log.status}">${log.status}</span>
-                    </div>
-                `).join('');
-            } catch (err) {
-                console.error("Log fetch failed", err);
+                console.error("Status fetch failed:", err);
+                state.espOnline = false;
+                updateDispenseButton();
             }
         }
 
         // --- QR Code Logic ---
 
         async function toggleScanner() {
-            const container = document.getElementById('qr-reader-container');
-            if (container.style.display === 'block') {
+            if (isScannerOpen) {
                 stopScanner();
             } else {
                 startScanner();
@@ -1197,9 +989,11 @@
         }
 
         async function startScanner() {
-            document.getElementById('qr-reader-container').style.display = 'block';
+            const container = document.getElementById('qr-reader-container');
+            container.style.display = 'block';
+            isScannerOpen = true;
 
-            // Clear previous instance if exists
+            // Clean up previous instance
             const qrReaderElement = document.getElementById("qr-reader");
             qrReaderElement.innerHTML = "";
 
@@ -1211,25 +1005,20 @@
                     { facingMode: "environment" },
                     config,
                     (decodedText) => {
-                        // Success
                         document.getElementById('user-token').value = decodedText;
                         stopScanner();
-                        // Flash the input to show success
+                        // Visual flash
                         const input = document.getElementById('user-token');
-                        input.style.borderColor = 'var(--success)';
-                        setTimeout(() => input.style.borderColor = '', 500);
+                        input.style.backgroundColor = 'rgba(48, 209, 88, 0.2)';
+                        setTimeout(() => input.style.backgroundColor = '', 300);
 
-                        // Auto-dispense if ready
-                        if (!document.getElementById('dispense-btn').disabled) {
-                            handleDispense();
-                        }
+                        updateDispenseButton();
                     },
-                    (errorMessage) => { /* Ignore constant scan failures */ }
+                    () => { } // Ignore scan errors
                 );
             } catch (err) {
-                console.error("Scanner error", err);
-                document.getElementById('error-msg').innerText = "CAMERA ACCESS DENIED";
-                document.getElementById('error-msg').style.display = 'block';
+                console.error("Camera error", err);
+                alert("Could not access camera.");
                 stopScanner();
             }
         }
@@ -1238,30 +1027,30 @@
             if (html5QrCode) {
                 try {
                     await html5QrCode.stop();
-                } catch (e) { console.log("Scanner already stopped"); }
+                } catch (e) { }
                 html5QrCode = null;
             }
             document.getElementById('qr-reader-container').style.display = 'none';
+            isScannerOpen = false;
         }
 
-        // --- Initialization ---
+        // --- Init ---
 
-        // Enter key to dispense
+        // Set default amount visually
+        setAmount(30, 1);
+
+        // Enter key support
         document.getElementById('user-token').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                if (!document.getElementById('dispense-btn').disabled) {
-                    handleDispense();
-                }
+            if (e.key === 'Enter' && !document.getElementById('dispense-btn').disabled) {
+                handleDispense();
             }
         });
 
-        // Polling loops
-        setInterval(refreshStatus, 1000);
-        setInterval(refreshLogs, 5000);
-
-        // Initial calls
-        refreshStatus();
-        refreshLogs();
+        // Polling
+        setInterval(refreshStatus, 2000); // Check status every 2s
+        setInterval(fetchLogs, 5000);    // Sync logs every 5s
+        refreshStatus(); // Initial check
+        fetchLogs();    // Initial logs fetch
 
     </script>
 </body>
