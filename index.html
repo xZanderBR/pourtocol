@@ -104,34 +104,7 @@
             gap: 12px;
         }
 
-        .aztec-emblem {
-            width: 80px;
-            height: 80px;
-            background: var(--sdsu-scarlet);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(166, 25, 46, 0.3);
-            position: relative;
-        }
 
-        .aztec-emblem::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: var(--sdsu-black);
-            clip-path: inherit;
-        }
-
-        .aztec-emblem svg {
-            width: 45px;
-            height: 45px;
-            position: relative;
-            z-index: 2;
-            fill: var(--sdsu-scarlet);
-            filter: drop-shadow(0 0 5px rgba(166, 25, 46, 0.5));
-        }
 
         .brand-title {
             font-size: 2.4rem;
@@ -668,12 +641,7 @@
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <div class="aztec-emblem">
-                <svg viewBox="0 0 24 24">
-                    <path
-                        d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2ZM12 15.4L8.5 17.5L12 5L15.5 17.5L12 15.4Z" />
-                </svg>
-            </div>
+
             <h1 class="brand-title">Aztec Pour</h1>
             <div class="brand-subtitle">SDSU <span class="scribble">Shot</span> Water Dispenser</div>
         </header>
