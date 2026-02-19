@@ -21,12 +21,14 @@ const INITIAL_STATUS: SystemStatus = {
  * Polls GET /api/status with adaptive intervals:
  * - 2s when ESP32 is online
  * - 10s when ESP32 is offline
+ * Uses setInterval for consistent wall-clock timing regardless of fetch duration.
  */
 export function useStatus() {
   const [status, setStatus] = useState<SystemStatus>(INITIAL_STATUS);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
   const onlineRef = useRef(false);
+  const hasFetched = useRef(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -45,23 +47,31 @@ export function useStatus() {
     }
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
+  // Fire the very first fetch eagerly (survives strict mode double-mount)
+  if (!hasFetched.current) {
+    hasFetched.current = true;
+    refresh();
+  }
 
-    async function poll() {
-      if (cancelled) return;
-      await refresh();
-      if (!cancelled) {
-        const interval = onlineRef.current ? POLL_STATUS_MS : POLL_STATUS_OFFLINE_MS;
-        timeoutRef.current = setTimeout(poll, interval);
-      }
+  useEffect(() => {
+    function scheduleInterval() {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      const interval = onlineRef.current ? POLL_STATUS_MS : POLL_STATUS_OFFLINE_MS;
+      intervalRef.current = setInterval(() => {
+        refresh().then(() => {
+          // Re-schedule if the online state changed (interval needs updating)
+          const newInterval = onlineRef.current ? POLL_STATUS_MS : POLL_STATUS_OFFLINE_MS;
+          if (newInterval !== interval) {
+            scheduleInterval();
+          }
+        });
+      }, interval);
     }
 
-    poll();
+    scheduleInterval();
 
     return () => {
-      cancelled = true;
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [refresh]);
 
