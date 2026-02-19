@@ -10,11 +10,10 @@ import requests
 from flask import Blueprint, Response, jsonify, render_template, request
 
 import esp32
+from config import settings
 from database import get_logs, log_event
 
 logger = logging.getLogger(__name__)
-
-MAX_DISPENSE_ML = 60
 
 api = Blueprint("api", __name__)
 
@@ -102,9 +101,9 @@ def dispense() -> tuple[Response, int] | Response:
         log_event(user_token, amount_ml, "failed", "Already pouring")
         return _error("Already pouring")
 
-    if amount_ml <= 0 or amount_ml > MAX_DISPENSE_ML:
+    if amount_ml <= 0 or amount_ml > settings.max_dispense_ml:
         log_event(user_token, amount_ml, "failed", f"Invalid amount: {amount_ml}ml")
-        return _error(f"Invalid amount (max {MAX_DISPENSE_ML}ml)")
+        return _error(f"Invalid amount (max {settings.max_dispense_ml}ml)")
 
     try:
         current_status = esp32.fetch_status()

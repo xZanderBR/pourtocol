@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from flask import Flask
 
+from config import settings
 from database import init_app
 from routes import api
 
 
 def create_app() -> Flask:
     app = Flask(__name__, template_folder=".")
-    app.config["DATABASE"] = "dispenser.db"
+    app.config["DATABASE"] = settings.database_path
 
     init_app(app)
     app.register_blueprint(api)
@@ -21,4 +22,4 @@ def create_app() -> Flask:
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)  # noqa: S104
+    app.run(host=settings.host, port=settings.port, debug=settings.debug)

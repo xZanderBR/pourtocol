@@ -7,24 +7,24 @@ import time
 
 import requests
 
-logger = logging.getLogger(__name__)
+from config import settings
 
-# ESP32 Configuration
-URL = "http://esp32.local"
-_STATUS_TIMEOUT = 1.0
-_DISPENSE_TIMEOUT = 2.0
+logger = logging.getLogger(__name__)
 
 
 def fetch_status() -> dict:
     """Fetch the current status from the ESP32 hardware."""
-    resp = requests.get(f"{URL}/status", timeout=_STATUS_TIMEOUT)
+    resp = requests.get(
+        f"{settings.esp32_url}/status",
+        timeout=settings.esp32_status_timeout,
+    )
     return resp.json()
 
 
 def send_dispense(amount_ml: int) -> requests.Response:
     """Send a dispense command to the ESP32."""
     return requests.post(
-        f"{URL}/dispense",
+        f"{settings.esp32_url}/dispense",
         json={"amount_ml": amount_ml, "request_id": f"req_{int(time.time())}"},
-        timeout=_DISPENSE_TIMEOUT,
+        timeout=settings.esp32_dispense_timeout,
     )
