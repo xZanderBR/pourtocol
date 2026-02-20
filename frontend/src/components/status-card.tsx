@@ -56,7 +56,7 @@ export function StatusCard({ status }: StatusCardProps) {
         <div className="flex items-center gap-2 tabular-nums">
           <span className="text-[0.85rem] font-bold tracking-tight text-white dark:text-primary">
             {time.toLocaleTimeString("en-US", {
-              hour12: false,
+              hour12: true,
               timeZone: "America/Los_Angeles"
             })}
           </span>
