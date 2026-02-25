@@ -1,4 +1,4 @@
-"""Chuggernog - Flask application factory."""
+"""Pourtocol - Flask application factory."""
 
 from __future__ import annotations
 

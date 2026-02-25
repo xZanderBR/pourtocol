@@ -1,4 +1,4 @@
-"""API routes for the Chuggernog app."""
+"""API routes for the Pourtocol app."""
 
 from __future__ import annotations
 
