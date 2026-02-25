@@ -37,6 +37,14 @@ export interface LogEntry {
   reason: string | null;
 }
 
+/** Single leaderboard entry returned from GET /api/leaderboard. */
+export interface LeaderboardEntry {
+  user_token: string;
+  pour_count: number;
+  total_ml: number;
+  last_pour: string;
+}
+
 /** Volume preset option for the dispense control. */
 export interface VolumePreset {
   label: string;

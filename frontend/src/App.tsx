@@ -1,16 +1,21 @@
 import { useCallback } from "react";
 import { Toaster, toast } from "sonner";
+import { GlassWater, ScrollText, Trophy } from "lucide-react";
 
 import { StatusCard } from "@/components/status-card";
 import { DispenseControl } from "@/components/dispense-control";
 import { ActivityLog } from "@/components/activity-log";
+import { Leaderboard } from "@/components/leaderboard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStatus } from "@/hooks/use-status";
 import { useLogs } from "@/hooks/use-logs";
 import { useDispense } from "@/hooks/use-dispense";
+import { useLeaderboard } from "@/hooks/use-leaderboard";
 
 export default function App() {
   const { status, lastUpdated, refresh: refreshStatus } = useStatus();
   const { logs, refresh: refreshLogs } = useLogs(status.esp_online);
+  const { entries, refresh: refreshLeaderboard } = useLeaderboard();
 
   const handleSuccess = useCallback(() => {
     toast.success("Dispense started");
@@ -18,8 +23,9 @@ export default function App() {
     setTimeout(() => {
       refreshStatus();
       refreshLogs();
+      refreshLeaderboard();
     }, 1000);
-  }, [refreshStatus, refreshLogs]);
+  }, [refreshStatus, refreshLogs, refreshLeaderboard]);
 
   const handleError = useCallback((message: string) => {
     toast.error(message);
@@ -48,19 +54,43 @@ export default function App() {
           </p>
         </header>
 
-        {/* Status */}
+        {/* Status — always visible */}
         <StatusCard status={status} lastUpdated={lastUpdated} />
 
-        {/* Controls */}
-        <DispenseControl
-          status={status}
-          dispenseState={dispenseState}
-          errorMessage={errorMessage}
-          onDispense={dispense}
-        />
+        {/* Tabbed content */}
+        <Tabs defaultValue="pour">
+          <TabsList>
+            <TabsTrigger value="pour">
+              <GlassWater className="h-4 w-4" />
+              Pour
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard">
+              <Trophy className="h-4 w-4" />
+              Leaderboard
+            </TabsTrigger>
+            <TabsTrigger value="log">
+              <ScrollText className="h-4 w-4" />
+              Log
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Logs */}
-        <ActivityLog logs={logs} />
+          <TabsContent value="pour">
+            <DispenseControl
+              status={status}
+              dispenseState={dispenseState}
+              errorMessage={errorMessage}
+              onDispense={dispense}
+            />
+          </TabsContent>
+
+          <TabsContent value="leaderboard">
+            <Leaderboard entries={entries} />
+          </TabsContent>
+
+          <TabsContent value="log">
+            <ActivityLog logs={logs} />
+          </TabsContent>
+        </Tabs>
       </main>
 
       <Toaster position="top-center" theme="dark" richColors closeButton />

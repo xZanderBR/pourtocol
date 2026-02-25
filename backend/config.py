@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     esp32_url: str = "http://esp32.local"
     esp32_status_timeout: float = 1.0
     esp32_dispense_timeout: float = 2.0
+    mock_esp32: bool = False
 
     # Dispense limits
     max_dispense_ml: int = 60

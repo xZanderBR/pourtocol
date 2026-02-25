@@ -5,13 +5,14 @@ from __future__ import annotations
 import http
 import logging
 import time
+from pathlib import Path
 
 import requests
-from flask import Blueprint, Response, jsonify, render_template, request
+from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
 
 import esp32
 from config import settings
-from database import get_logs, log_event
+from database import get_leaderboard, get_logs, log_event
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ def _execute_pour(user_token: str, amount_ml: int) -> tuple[Response, int] | Res
         _state.is_pouring = False
 
     if resp.status_code == http.HTTPStatus.OK:
-        log_event(user_token, amount_ml, "started")
+        log_event(user_token, amount_ml, "completed")
         return _success("Dispense started")
 
     log_event(user_token, amount_ml, "failed", "ESP32 rejected request")
@@ -63,8 +64,9 @@ def _execute_pour(user_token: str, amount_ml: int) -> tuple[Response, int] | Res
 
 
 @api.route("/")
-def index() -> str:
-    return render_template("index.html")
+def index() -> Response:
+    """Serve the built React frontend."""
+    return send_from_directory(Path(current_app.static_folder), "index.html")  # type: ignore[arg-type]
 
 
 @api.route("/api/status")
@@ -127,3 +129,10 @@ def logs() -> Response:
     limit = request.args.get("limit", 20, type=int)
     event_logs = get_logs(limit)
     return jsonify([dict(log) for log in event_logs])
+
+
+@api.route("/api/leaderboard")
+def leaderboard() -> Response:
+    limit = request.args.get("limit", 20, type=int)
+    rows = get_leaderboard(limit)
+    return jsonify([dict(row) for row in rows])

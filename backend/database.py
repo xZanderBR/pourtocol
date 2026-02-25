@@ -71,3 +71,23 @@ def get_logs(limit: int = 20) -> list[sqlite3.Row]:
         "FROM events ORDER BY timestamp DESC LIMIT ?",
         (limit,),
     ).fetchall()
+
+
+def get_leaderboard(limit: int = 20) -> list[sqlite3.Row]:
+    """Return users ranked by total ml successfully dispensed."""
+    db = get_db()
+    return db.execute(
+        """
+        SELECT
+            user_token,
+            COUNT(*) AS pour_count,
+            COALESCE(SUM(amount_ml), 0) AS total_ml,
+            MAX(timestamp) AS last_pour
+        FROM events
+        WHERE status IN ('started', 'completed')
+        GROUP BY user_token
+        ORDER BY total_ml DESC, pour_count DESC
+        LIMIT ?
+        """,
+        (limit,),
+    ).fetchall()
