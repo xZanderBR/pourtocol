@@ -12,6 +12,9 @@ backend/static/
 # ESP32 firmware (separate project)
 pio/
 
+# Environment variables
+.env
+
 # C extensions
 *.so
 

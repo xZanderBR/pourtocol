@@ -118,7 +118,28 @@ npm run build    # outputs to frontend/dist/
 npm run preview  # preview the production build locally
 ```
 
-### 3. Hardware Configuration
+### 3. Configuration
+All settings can be overridden via environment variables or a `backend/.env` file:
+
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `HOST` | `0.0.0.0` | Flask bind address |
+| `PORT` | `8080` | Flask server port |
+| `DEBUG` | `true` | Enable Flask debug mode |
+| `DATABASE_PATH` | `dispenser.db` | SQLite database file path |
+| `ESP32_URL` | `http://esp32.local` | ESP32 base URL |
+| `ESP32_STATUS_TIMEOUT` | `1.0` | Timeout (seconds) for status requests |
+| `ESP32_DISPENSE_TIMEOUT` | `2.0` | Timeout (seconds) for dispense requests |
+| `MOCK_ESP32` | `false` | Simulate ESP32 hardware for local development |
+| `MAX_DISPENSE_ML` | `60` | Maximum allowed pour volume (ml) |
+
+Example `backend/.env`:
+```env
+MOCK_ESP32=true
+PORT=8080
+```
+
+### 4. Hardware Configuration
 - Flash ESP32 with an HTTP-responsive firmware.
 - Connect a submersible pump/solenoid and an IR/Ultrasonic proximity sensor for glass detection.
 - Ensure the ESP32 is on the same local network as the Flask server.
