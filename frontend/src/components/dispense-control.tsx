@@ -98,7 +98,8 @@ export function DispenseControl({
       if (!isReady) return;
       const token = userToken.trim() || "Guest";
       onDispense(activeAmount, token);
-      setUserToken("");
+      // Intentionally don't clear userToken — keep the name sticky so back-to-back
+      // pours don't require a retap. A new NFC tap or manual edit replaces it.
     },
     [isReady, activeAmount, userToken, onDispense],
   );
