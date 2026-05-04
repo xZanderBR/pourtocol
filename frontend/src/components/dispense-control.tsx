@@ -1,4 +1,4 @@
-import { type FormEvent, useCallback, useRef, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,6 +34,16 @@ export function DispenseControl({
     setUserToken(value);
     setScannerOpen(false);
   }, []);
+
+  // Auto-fill user token when an NFC tag is tapped on the ESP32
+  const prevNfcUid = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const uid = status.esp_status.nfc_uid;
+    if (uid && uid !== prevNfcUid.current) {
+      setUserToken(uid);
+    }
+    prevNfcUid.current = uid;
+  }, [status.esp_status.nfc_uid]);
 
   const activeAmount = customMl ? parseInt(customMl, 10) || 0 : VOLUME_PRESETS[selectedPreset].ml;
   const isOverLimit = activeAmount > MAX_DISPENSE_ML;

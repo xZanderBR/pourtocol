@@ -4,6 +4,10 @@ export interface EspStatus {
   glass_present: boolean;
   uptime: number;
   last_pour_ml: number;
+  /** PN532 NFC fields (present when NFC module is wired) */
+  nfc_uid?: string;
+  nfc_tag_present?: boolean;
+  nfc_ready?: boolean;
 }
 
 /** Combined system status from GET /api/status. */

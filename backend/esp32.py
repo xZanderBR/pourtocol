@@ -21,6 +21,9 @@ class _MockState:
     glass_present: bool = True
     state: str = "idle"
     last_pour_ml: int = 0
+    nfc_uid: str = ""
+    nfc_tag_present: bool = False
+    nfc_ready: bool = True
     _start: float = time.time()
 
     def status(self) -> dict:
@@ -29,6 +32,9 @@ class _MockState:
             "glass_present": self.glass_present,
             "uptime": int(time.time() - self._start),
             "last_pour_ml": self.last_pour_ml,
+            "nfc_uid": self.nfc_uid,
+            "nfc_tag_present": self.nfc_tag_present,
+            "nfc_ready": self.nfc_ready,
         }
 
 

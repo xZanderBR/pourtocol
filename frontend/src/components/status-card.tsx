@@ -86,6 +86,28 @@ export function StatusCard({ status }: StatusCardProps) {
           indicator={machineIndicator}
           valueClassName={isPouring ? "text-primary font-bold animate-pulse" : undefined}
         />
+        {status.esp_status.nfc_ready !== undefined && (
+          <>
+            <Separator className="opacity-10" />
+            <StatusRow
+              label="NFC Reader"
+              value={
+                !status.esp_status.nfc_ready
+                  ? "Not Found"
+                  : status.esp_status.nfc_tag_present
+                    ? `Tag: ${status.esp_status.nfc_uid}`
+                    : "Waiting for tap…"
+              }
+              indicator={
+                !status.esp_status.nfc_ready
+                  ? "offline"
+                  : status.esp_status.nfc_tag_present
+                    ? "online"
+                    : undefined
+              }
+            />
+          </>
+        )}
       </CardContent>
     </Card >
   );
