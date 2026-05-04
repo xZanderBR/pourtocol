@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 
 import { sendDispense } from "@/lib/api";
-import { FEEDBACK_DURATION_MS, POUR_TIMEOUT_MS } from "@/lib/constants";
+import { FEEDBACK_DURATION_MS } from "@/lib/constants";
 
-export type DispenseState = "idle" | "requesting" | "pouring" | "error";
+export type DispenseState = "idle" | "requesting" | "error";
 
 interface UseDispenseOptions {
   onSuccess?: () => void;
@@ -11,8 +11,7 @@ interface UseDispenseOptions {
 }
 
 /**
- * Encapsulates the dispense workflow:
- *  idle → requesting → pouring → idle
+ *  idle → requesting → idle    (pouring is reflected via ESP status, not local state)
  *  idle → requesting → error → idle
  */
 export function useDispense({ onSuccess, onError }: UseDispenseOptions = {}) {
@@ -31,13 +30,8 @@ export function useDispense({ onSuccess, onError }: UseDispenseOptions = {}) {
         });
 
         if (result.success) {
-          setDispenseState("pouring");
+          setDispenseState("idle");
           onSuccess?.();
-
-          // Return to idle after simulated pour duration
-          setTimeout(() => {
-            setDispenseState("idle");
-          }, POUR_TIMEOUT_MS);
         } else {
           throw new Error(result.reason ?? "Dispense failed");
         }

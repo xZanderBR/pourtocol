@@ -8,6 +8,8 @@ export interface EspStatus {
   nfc_uid?: string;
   nfc_tag_present?: boolean;
   nfc_ready?: boolean;
+  /** Friendly name for nfc_uid from users.json; null when the tag is unmapped. */
+  nfc_name?: string | null;
 }
 
 /** Combined system status from GET /api/status. */

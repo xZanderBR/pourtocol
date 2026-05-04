@@ -12,6 +12,3 @@ export const POLL_STATUS_OFFLINE_MS = 5_000;
 
 /** Duration to show success/error feedback before resetting (ms). */
 export const FEEDBACK_DURATION_MS = 3_000;
-
-/** Simulated pour duration before resetting state (ms). */
-export const POUR_TIMEOUT_MS = 4_000;

@@ -6,7 +6,7 @@
 ### Core Features
 - **Real-time Monitoring:** Synchronized status updates for glass presence and machine state.
 - **Precision Pouring:** Selectable shot sizes (15ml, 30ml, 45ml) with custom override support.
-- **QR Identity Integration:** Instant user identification via camera-based QR scanning.
+- **NFC Identity:** Instant user identification via PN532 NFC tap; first-time tags can be registered with a friendly name on the spot.
 - **Audit Logging:** Comprehensive SQLite database for tracking every pour and failure event.
 - **Safety Interlocks:** Hardware-level checks for glass presence and concurrent flow prevention.
 
@@ -20,7 +20,6 @@
 | **Database** | SQLite3 |
 | **Hardware** | ESP32 (Micro-controller) |
 | **Icons** | Lucide React |
-| **Scanning** | html5-qrcode |
 
 ---
 

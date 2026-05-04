@@ -56,4 +56,12 @@ export function fetchLeaderboard(limit = 20): Promise<LeaderboardEntry[]> {
   return request<LeaderboardEntry[]>(`/leaderboard?limit=${limit}`);
 }
 
+/** Persist a UID → display-name mapping for future taps. */
+export function registerUser(uid: string, name: string): Promise<DispenseResponse> {
+  return request<DispenseResponse>("/users", {
+    method: "POST",
+    body: JSON.stringify({ uid, name }),
+  });
+}
+
 export { ApiError };

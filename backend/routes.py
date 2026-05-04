@@ -11,6 +11,7 @@ import requests
 from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
 
 import esp32
+import users
 from config import settings
 from database import get_leaderboard, get_logs, log_event
 
@@ -76,19 +77,40 @@ def status() -> Response:
         }
         online = False
 
+    # Annotate with the friendly name for the currently-tapped UID (or null
+    # if the tag is unmapped). Spread to avoid mutating esp32's cached dict.
+    annotated = {**esp_status, "nfc_name": users.name_for(esp_status.get("nfc_uid", ""))}
+
     return jsonify({
         "server_online": True,
         "esp_online": online,
-        "esp_status": esp_status,
+        "esp_status": annotated,
         "timestamp": time.time(),
     })
+
+
+@api.route("/api/users", methods=["POST"])
+def register_user() -> tuple[Response, int] | Response:
+    data = request.json or {}
+    uid = (data.get("uid") or "").strip()
+    name = (data.get("name") or "").strip()
+    if not uid or not name:
+        return _error("uid and name are required")
+    try:
+        users.set_name(uid, name)
+    except ValueError as e:
+        return _error(str(e))
+    except OSError:
+        logger.exception("Failed to persist user mapping")
+        return _error("Could not save mapping", http.HTTPStatus.INTERNAL_SERVER_ERROR)
+    return _success(f"Saved {uid} → {name}")
 
 
 @api.route("/api/dispense", methods=["POST"])
 def dispense() -> tuple[Response, int] | Response:
     data = request.json or {}
     amount_ml = data.get("amount_ml", 0)
-    user_token = data.get("user_token", "anonymous")
+    user_token = users.resolve(data.get("user_token", "anonymous"))
 
     if amount_ml <= 0 or amount_ml > settings.max_dispense_ml:
         log_event(user_token, amount_ml, "failed", f"Invalid amount: {amount_ml}ml")

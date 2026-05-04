@@ -4,18 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { QrScanner } from "@/components/qr-scanner";
 import { cn } from "@/lib/utils";
+import { registerUser } from "@/lib/api";
 import { MAX_DISPENSE_ML, VOLUME_PRESETS } from "@/lib/constants";
 import type { DispenseState } from "@/hooks/use-dispense";
 import type { SystemStatus } from "@/types/api";
-import { GlassWater, ScanLine } from "lucide-react";
+import { GlassWater } from "lucide-react";
 
 interface DispenseControlProps {
   status: SystemStatus;
   dispenseState: DispenseState;
   errorMessage: string | null;
   onDispense: (amountMl: number, userToken: string) => void;
+  onAliasSaved?: () => void;
+  onAliasError?: (message: string) => void;
 }
 
 export function DispenseControl({
@@ -23,31 +25,56 @@ export function DispenseControl({
   dispenseState,
   errorMessage,
   onDispense,
+  onAliasSaved,
+  onAliasError,
 }: DispenseControlProps) {
   const [selectedPreset, setSelectedPreset] = useState(1); // Default to 30ml
   const [customMl, setCustomMl] = useState("");
   const [userToken, setUserToken] = useState("");
-  const [scannerOpen, setScannerOpen] = useState(false);
+  const [unmappedUid, setUnmappedUid] = useState<string | null>(null);
+  const [savingAlias, setSavingAlias] = useState(false);
   const tokenRef = useRef<HTMLInputElement>(null);
 
-  const handleScan = useCallback((value: string) => {
-    setUserToken(value);
-    setScannerOpen(false);
-  }, []);
-
-  // Auto-fill user token when an NFC tag is tapped on the ESP32
+  // React to a new NFC tap: fill input with friendly name if known,
+  // otherwise blank the input and surface the register-alias banner.
   const prevNfcUid = useRef<string | undefined>(undefined);
   useEffect(() => {
     const uid = status.esp_status.nfc_uid;
+    const name = status.esp_status.nfc_name;
     if (uid && uid !== prevNfcUid.current) {
-      setUserToken(uid);
+      if (name) {
+        setUserToken(name);
+        setUnmappedUid(null);
+      } else {
+        setUserToken("");
+        setUnmappedUid(uid);
+        // Focus the input so the user can type a name immediately
+        requestAnimationFrame(() => tokenRef.current?.focus());
+      }
     }
     prevNfcUid.current = uid;
-  }, [status.esp_status.nfc_uid]);
+  }, [status.esp_status.nfc_uid, status.esp_status.nfc_name]);
+
+  const handleSaveAlias = useCallback(async () => {
+    const name = userToken.trim();
+    if (!unmappedUid || !name) return;
+    setSavingAlias(true);
+    try {
+      await registerUser(unmappedUid, name);
+      setUnmappedUid(null);
+      onAliasSaved?.();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save alias";
+      onAliasError?.(message);
+    } finally {
+      setSavingAlias(false);
+    }
+  }, [unmappedUid, userToken, onAliasSaved, onAliasError]);
 
   const activeAmount = customMl ? parseInt(customMl, 10) || 0 : VOLUME_PRESETS[selectedPreset].ml;
   const isOverLimit = activeAmount > MAX_DISPENSE_ML;
 
+  const isPouring = status.esp_status.state === "pouring";
   const isReady =
     status.esp_online &&
     status.esp_status.glass_present &&
@@ -78,10 +105,10 @@ export function DispenseControl({
 
   // Button label logic
   function getButtonLabel(): string {
-    if (dispenseState === "pouring") return "DISPENSING...";
     if (dispenseState === "requesting") return "REQUESTING...";
     if (dispenseState === "error") return errorMessage ? `ERROR: ${errorMessage}` : "ERROR";
     if (!status.esp_online) return "SYSTEM OFFLINE";
+    if (isPouring) return "DISPENSING...";
     if (!status.esp_status.glass_present) return "PLACE GLASS";
     if (isOverLimit) return "EXCESS VOLUME";
     return "DISPENSE BEVERAGE";
@@ -100,33 +127,42 @@ export function DispenseControl({
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* User Token Input */}
-          <div className="relative">
+          <div className="space-y-2">
             <Input
               ref={tokenRef}
               value={userToken}
               onChange={(e) => setUserToken(e.target.value)}
-              placeholder="Scan ID or Enter Name"
-              className="pr-11"
+              placeholder={unmappedUid ? "Enter a name for this tag…" : "Tap NFC tag or enter a name"}
               autoComplete="off"
             />
-            <button
-              type="button"
-              onClick={() => setScannerOpen((o) => !o)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-primary transition-colors hover:bg-muted hover:text-primary-foreground"
-              title="Scan QR Code"
-              aria-label="Scan QR code"
-            >
-              <ScanLine className="size-4 animate-pulse opacity-80" />
-            </button>
-          </div>
 
-          {/* QR Scanner */}
-          {scannerOpen && (
-            <QrScanner
-              onScan={handleScan}
-              onClose={() => setScannerOpen(false)}
-            />
-          )}
+            {/* Register-alias banner: shown when an unrecognized NFC tag is on the reader */}
+            {unmappedUid && (
+              <div className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2.5 text-xs">
+                <p className="mb-2 text-muted-foreground">
+                  New tag <span className="font-mono text-foreground">{unmappedUid}</span> — name it above to remember it next time.
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleSaveAlias}
+                    disabled={savingAlias || !userToken.trim()}
+                  >
+                    {savingAlias ? "Saving…" : "Save alias"}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setUnmappedUid(null)}
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Volume Selection */}
           <div className="space-y-2">
@@ -192,10 +228,10 @@ export function DispenseControl({
               "w-full text-sm font-bold uppercase tracking-wider transition-all duration-300",
               isErrorButton && "border border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20",
               !status.esp_online && "opacity-60 grayscale cursor-not-allowed",
-              (dispenseState === "pouring" || dispenseState === "requesting") && "animate-pulse shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)] bg-primary border border-primary/50 text-primary-foreground",
+              (isPouring || dispenseState === "requesting") && "animate-pulse shadow-[0_0_15px_rgba(var(--color-primary-rgb),0.5)] bg-primary border border-primary/50 text-primary-foreground",
             )}
           >
-            <GlassWater className={cn("mr-2 size-4", (dispenseState === "pouring" && "animate-bounce"))} />
+            <GlassWater className={cn("mr-2 size-4", isPouring && "animate-bounce")} />
             {getButtonLabel()}
           </Button>
         </form>

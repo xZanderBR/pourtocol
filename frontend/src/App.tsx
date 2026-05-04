@@ -28,6 +28,11 @@ export default function App() {
     toast.error(message);
   }, []);
 
+  const handleAliasSaved = useCallback(() => {
+    toast.success("Tag registered");
+    refreshStatus();
+  }, [refreshStatus]);
+
   const { dispenseState, errorMessage, dispense } = useDispense({
     onSuccess: handleSuccess,
     onError: handleError,
@@ -77,6 +82,8 @@ export default function App() {
               dispenseState={dispenseState}
               errorMessage={errorMessage}
               onDispense={dispense}
+              onAliasSaved={handleAliasSaved}
+              onAliasError={handleError}
             />
           </TabsContent>
 
