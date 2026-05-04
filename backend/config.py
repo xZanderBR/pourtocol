@@ -35,6 +35,10 @@ class Settings(BaseSettings):
 
     # ESP32 hardware
     esp32_url: str = "http://esp32.local"
+    # Optional: pin the ESP32's IP to fully bypass mDNS/.local resolution. If
+    # set, takes precedence over esp32_url. Useful when the host's mDNS
+    # resolver is slow or unreliable. Pair with a DHCP reservation.
+    esp32_ip: str | None = None
     esp32_status_timeout: float = 1.0
     esp32_dispense_timeout: float = 2.0
     mock_esp32: bool = False

@@ -19,15 +19,6 @@ logger = logging.getLogger(__name__)
 api = Blueprint("api", __name__)
 
 
-class _DispenserState:
-    """Mutable container for dispenser runtime state."""
-
-    is_pouring: bool = False
-
-
-_state = _DispenserState()
-
-
 # --- Response helpers ---
 
 
@@ -45,22 +36,23 @@ def _success(message: str) -> Response:
 
 
 def _execute_pour(user_token: str, amount_ml: int) -> tuple[Response, int] | Response:
-    """Send the dispense command to the ESP32 and handle the response."""
+    """Send the dispense command to the ESP32 and surface its response."""
     try:
-        _state.is_pouring = True
         resp = esp32.send_dispense(amount_ml)
     except requests.RequestException as e:
         log_event(user_token, amount_ml, "failed", f"Connection error: {e!s}")
         return _error(f"Connection error: {e!s}", http.HTTPStatus.INTERNAL_SERVER_ERROR)
-    finally:
-        _state.is_pouring = False
 
     if resp.status_code == http.HTTPStatus.OK:
         log_event(user_token, amount_ml, "completed")
         return _success("Dispense started")
 
-    log_event(user_token, amount_ml, "failed", "ESP32 rejected request")
-    return _error("ESP32 rejected request", http.HTTPStatus.INTERNAL_SERVER_ERROR)
+    try:
+        reason = resp.json().get("error", "ESP32 rejected request")
+    except ValueError:
+        reason = "ESP32 rejected request"
+    log_event(user_token, amount_ml, "failed", reason)
+    return _error(reason, resp.status_code)
 
 
 @api.route("/")
@@ -89,7 +81,6 @@ def status() -> Response:
         "esp_online": online,
         "esp_status": esp_status,
         "timestamp": time.time(),
-        "is_pouring": _state.is_pouring,
     })
 
 
@@ -99,27 +90,9 @@ def dispense() -> tuple[Response, int] | Response:
     amount_ml = data.get("amount_ml", 0)
     user_token = data.get("user_token", "anonymous")
 
-    if _state.is_pouring:
-        log_event(user_token, amount_ml, "failed", "Already pouring")
-        return _error("Already pouring")
-
     if amount_ml <= 0 or amount_ml > settings.max_dispense_ml:
         log_event(user_token, amount_ml, "failed", f"Invalid amount: {amount_ml}ml")
         return _error(f"Invalid amount (max {settings.max_dispense_ml}ml)")
-
-    try:
-        current_status = esp32.fetch_status()
-    except requests.RequestException as e:
-        log_event(user_token, amount_ml, "failed", f"Connection error: {e!s}")
-        return _error(f"Connection error: {e!s}", http.HTTPStatus.INTERNAL_SERVER_ERROR)
-
-    if not current_status.get("glass_present", False):
-        log_event(user_token, amount_ml, "failed", "No glass present")
-        return _error("No glass present")
-
-    if current_status.get("state") != "idle":
-        log_event(user_token, amount_ml, "failed", f"ESP32 not idle: {current_status.get('state')}")
-        return _error("Device is busy")
 
     return _execute_pour(user_token, amount_ml)
 

@@ -19,12 +19,9 @@ export default function App() {
 
   const handleSuccess = useCallback(() => {
     toast.success("Dispense started");
-    // Refresh data after a short delay to let the backend process
-    setTimeout(() => {
-      refreshStatus();
-      refreshLogs();
-      refreshLeaderboard();
-    }, 1000);
+    refreshStatus();
+    refreshLogs();
+    refreshLeaderboard();
   }, [refreshStatus, refreshLogs, refreshLeaderboard]);
 
   const handleError = useCallback((message: string) => {

@@ -42,7 +42,7 @@ export function StatusCard({ status }: StatusCardProps) {
   }, []);
 
   const espState = status.esp_status.state;
-  const isPouring = espState === "pouring" || status.is_pouring;
+  const isPouring = espState === "pouring";
 
   const machineStateLabel = espState.toUpperCase();
   const machineIndicator = isPouring ? "busy" : espState === "idle" ? "online" : undefined;

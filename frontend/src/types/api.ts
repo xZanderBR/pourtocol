@@ -16,7 +16,6 @@ export interface SystemStatus {
   esp_online: boolean;
   esp_status: EspStatus;
   timestamp: number;
-  is_pouring: boolean;
 }
 
 /** Dispense request body for POST /api/dispense. */

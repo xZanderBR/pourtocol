@@ -6,11 +6,9 @@ export const VOLUME_PRESETS = [
 
 export const MAX_DISPENSE_ML = 60;
 
-/** Polling intervals in milliseconds. */
-export const POLL_STATUS_MS = 2_000;
+/** Status polling intervals in milliseconds. */
+export const POLL_STATUS_MS = 500;
 export const POLL_STATUS_OFFLINE_MS = 5_000;
-export const POLL_LOGS_MS = 5_000;
-export const POLL_LEADERBOARD_MS = 10_000;
 
 /** Duration to show success/error feedback before resetting (ms). */
 export const FEEDBACK_DURATION_MS = 3_000;

@@ -14,14 +14,14 @@ const INITIAL_STATUS: SystemStatus = {
     last_pour_ml: 0,
   },
   timestamp: 0,
-  is_pouring: false,
 };
 
 /**
  * Polls GET /api/status with adaptive intervals:
- * - 2s when ESP32 is online
- * - 10s when ESP32 is offline
- * Uses setInterval for consistent wall-clock timing regardless of fetch duration.
+ * - POLL_STATUS_MS when ESP32 is online
+ * - POLL_STATUS_OFFLINE_MS when ESP32 is offline
+ * Polling pauses while the tab is hidden, and refreshes immediately on
+ * becoming visible again.
  */
 export function useStatus() {
   const [status, setStatus] = useState<SystemStatus>(INITIAL_STATUS);
@@ -46,26 +46,36 @@ export function useStatus() {
     }
   }, []);
 
-  // Fire the very first fetch eagerly (survives strict mode double-mount)
   if (!hasFetched.current) {
     hasFetched.current = true;
     refresh();
   }
 
   useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     async function poll() {
+      if (document.visibilityState === "hidden") {
+        timeoutId = setTimeout(poll, POLL_STATUS_OFFLINE_MS);
+        return;
+      }
       await refresh();
       const interval = onlineRef.current ? POLL_STATUS_MS : POLL_STATUS_OFFLINE_MS;
       timeoutId = setTimeout(poll, interval);
     }
 
-    // Start polling
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        refresh();
+      }
+    }
+
     timeoutId = setTimeout(poll, onlineRef.current ? POLL_STATUS_MS : POLL_STATUS_OFFLINE_MS);
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [refresh]);
 

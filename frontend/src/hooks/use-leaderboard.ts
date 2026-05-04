@@ -1,16 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { fetchLeaderboard } from "@/lib/api";
-import { POLL_LEADERBOARD_MS } from "@/lib/constants";
 import type { LeaderboardEntry } from "@/types/api";
 
 /**
- * Polls GET /api/leaderboard at a fixed interval.
- * Returns the ranked entries and a manual refresh callback.
+ * Loads leaderboard rankings once on mount. Entries only change after a pour
+ * completes, so the consumer should call `refresh` from its dispense success
+ * handler rather than poll on a timer.
  */
 export function useLeaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -22,11 +21,7 @@ export function useLeaderboard() {
   }, []);
 
   useEffect(() => {
-    queueMicrotask(refresh);
-    intervalRef.current = setInterval(refresh, POLL_LEADERBOARD_MS);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
+    refresh();
   }, [refresh]);
 
   return { entries, refresh } as const;
