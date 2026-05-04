@@ -17,7 +17,7 @@ export function StatusIndicator({ status, className }: StatusIndicatorProps) {
   return (
     <span
       className={cn(
-        "inline-block size-2 rounded-full transition-all duration-300",
+        "inline-block size-2 shrink-0 rounded-full transition-[background-color,box-shadow] duration-200",
         statusStyles[status],
         className,
       )}

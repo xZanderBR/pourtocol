@@ -25,9 +25,18 @@ function StatusRow({
   return (
     <div className="flex items-center justify-between py-3">
       <span className="text-sm text-foreground">{label}</span>
-      <span className={cn("flex items-center gap-2 text-sm text-muted-foreground tabular-nums", valueClassName)}>
+      {/* key={value} forces a clean remount on state change so React can never
+          paint the new label on top of a stale one (defends against perceived
+          ghosting during fast pours). */}
+      <span
+        key={value}
+        className={cn(
+          "flex items-center gap-2 text-sm text-muted-foreground tabular-nums",
+          valueClassName,
+        )}
+      >
         {indicator && <StatusIndicator status={indicator} />}
-        {value}
+        <span className="leading-none">{value}</span>
       </span>
     </div>
   );
@@ -84,7 +93,7 @@ export function StatusCard({ status }: StatusCardProps) {
           label="Machine State"
           value={machineStateLabel}
           indicator={machineIndicator}
-          valueClassName={isPouring ? "text-primary font-bold animate-pulse" : undefined}
+          valueClassName={isPouring ? "text-primary font-bold" : undefined}
         />
         {status.esp_status.nfc_ready !== undefined && (
           <>
