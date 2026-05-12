@@ -2,7 +2,8 @@
 
 A networked drink dispenser system. A React/TypeScript web app talks to a Python/Flask coordinator, which talks to an ESP32-powered hardware dispenser over the local network.
 
-**Companion firmware:** [xZanderBR/pourtocol-firmware](https://github.com/xZanderBR/pourtocol-firmware)
+**Demo:** [youtu.be/go4TOXk46Cg](https://youtu.be/go4TOXk46Cg)
+**Companion firmware:** [xZanderBR/Pourtocol-Firmware](https://github.com/xZanderBR/Pourtocol-Firmware)
 
 ## System Overview
 
@@ -73,7 +74,7 @@ pourtocol/
 
 ### ESP32 — consumed by the Flask server
 
-Documented in the [firmware README](https://github.com/xZanderBR/pourtocol-firmware#http-api). Briefly:
+Documented in the [firmware README](https://github.com/xZanderBR/Pourtocol-Firmware#http-api). Briefly:
 
 - `GET /status` → `{ state, glass_present, uptime, last_pour_ml, nfc_uid, nfc_tag_present, nfc_ready }`
 - `POST /dispense` ← `{ amount_ml, request_id }`
@@ -141,7 +142,7 @@ All values can be overridden via environment variables or `backend/.env`:
 
 ### 4. Hardware
 
-Flash the ESP32 with [pourtocol-firmware](https://github.com/xZanderBR/pourtocol-firmware). Both devices must be on the same local network. If mDNS (`esp32.local`) is flaky on your host, set `ESP32_IP` to bypass it entirely.
+Flash the ESP32 with [Pourtocol-Firmware](https://github.com/xZanderBR/Pourtocol-Firmware). Both devices must be on the same local network. If mDNS (`esp32.local`) is flaky on your host, set `ESP32_IP` to bypass it entirely.
 
 ## Safety Protocols
 
