@@ -1,8 +1,8 @@
 [project]
-name = "aztec-pour"
+name = "pourtocol"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+description = "Flask coordinator for the Pourtocol networked drink dispenser."
+readme = "../README.md"
 requires-python = ">=3.13"
 dependencies = [
     "flask>=3.0.0",
